@@ -17,26 +17,36 @@ if (!isset($_SESSION['answer'])) {
     $_SESSION['attempts'] = [];
 }
 
-$message = "";
 $gameEnded = false;
 
 if (isset($_POST['guess'])) {
     $guess = strtoupper(trim($_POST['guess']));
 
-    if (strlen($guess) == $wordLength && count($_SESSION['attempts']) < $maxAttempts && $message == "") {
-        $_SESSION['attempts'][] = $guess;
+    if (strlen($guess) == $wordLength && count($_SESSION['attempts']) < $maxAttempts) {
+        $checkQuery = mysqli_query(
+            $conn,
+            "SELECT word FROM words WHERE word = '" . mysqli_real_escape_string($conn, strtolower($guess)) . "'"
+        );
 
-        if ($guess == $_SESSION['answer']) {
-            $message = "You Win!";
-        } elseif (count($_SESSION['attempts']) >= $maxAttempts) {
-            $message = "Game Over! Word was " . $_SESSION['answer'];
+        if (mysqli_num_rows($checkQuery) > 0) {
+            $_SESSION['attempts'][] = $guess;
+
+            if ($guess == $_SESSION['answer']) {
+                $message = "You Win!";
+            } elseif (count($_SESSION['attempts']) >= $maxAttempts) {
+                $message = "Game Over! Word was " . $_SESSION['answer'];
+            }
+        } else {
+            $message = "Invalid word! Try again.";
         }
     } elseif (strlen($guess) == $wordLength && count($_SESSION['attempts']) >= $maxAttempts) {
         $message = "Game Over! Word was " . $_SESSION['answer'];
     }
 }
 
-$gameEnded = ($message != "" || count($_SESSION['attempts']) >= $maxAttempts);
+
+
+$gameEnded = (count($_SESSION['attempts']) >= $maxAttempts);
 
 function colorGuess($guess, $answer) {
     $result = [];
@@ -185,12 +195,23 @@ function colorGuess($guess, $answer) {
     }
     ?>
 
-    <h2><?php echo $message; ?></h2>
+    <?php
+// Show message text
 
-    <?php if ($message != "") : ?>
-        <form action="reset.php">
-            <button>Play Again</button>
-        </form>
-    <?php endif; ?>
+// ✅ Only show Play Again button if the game has ended (win or lose)
+if ($gameEnded)  {
+    echo '<form action="reset.php"><button>Play Again</button></form>';
+} else {
+    // ❌ Invalid word or still playing — keep game active
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const guessInput = document.getElementById('guessInput');
+            const currentGuess = document.getElementById('currentGuess');
+            guessInput.value = '';
+            currentGuess.textContent = '-';
+        });
+    </script>";
+}
+?>
 </body>
 </html>
