@@ -95,14 +95,15 @@ background:#787c7e;
 }
 
 .key{
-	padding:14px 10px;
+    font-family:Verdana, sans-serif;
+	padding:12px 10px;
 	min-width:54px;
 	height:56px;
 	border:none;
 	border-radius:8px;
 	background:#f2f2f2;
 	color:#111;
-	font-size:20px;
+	font-size:25px;
 	font-weight:bold;
 	cursor:pointer;
 	flex:1;
@@ -154,7 +155,7 @@ background:#787c7e;
 }
 
 .hint-modal-content {
-    background: #fff;
+    background: #c3c3c3;
     width: min(90vw, 700px);
     max-height: 90vh;
     overflow: auto;
@@ -168,10 +169,40 @@ background:#787c7e;
     position: absolute;
     top: 10px;
     right: 10px;
-    border: none;
-    background: #eee;
-    color: #111;
+    border: 2px solid #333;
+    background: #7d010175;
+    color: #ffffff;
     padding: 6px 10px;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.hint-modal-close:hover{
+    background: #ff0000;
+}
+
+.card { 
+    display: inline-block; 
+    padding: 20px 30px; 
+    font-size: 2em; 
+    border: 2px solid #333; 
+    border-radius: 8px; 
+    margin: 10px; 
+    background-color: white; 
+    color: black; 
+    font-weight: bold;
+}
+.dealer-card { 
+    background-color: #f8f9fa; 
+}
+button { 
+    background: #18aa4982;
+    padding: 10px 20px; 
+    font-size: 1.2em; 
+    margin: 5px; 
+    cursor: pointer; 
+}
+
+button:hover { 
+    background: #00ff00; 
 }

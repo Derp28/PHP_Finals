@@ -44,41 +44,8 @@ if (isset($_POST['choice']) && !$_SESSION['game_over']) {
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="style.css">
     <title>Higher or Lower</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        .card { 
-            display: inline-block; padding: 20px 30px; font-size: 2em; 
-            border: 2px solid #333; border-radius: 8px; margin: 10px; 
-            background-color: white; color: black; font-weight: bold;
-        }
-        .dealer-card { background-color: #f8f9fa; }
-        button { padding: 10px 20px; font-size: 1.2em; margin: 5px; cursor: pointer; }
-        
-        /* Styles for the closable hint box */
-        .hint-box {
-            background-color: #f0f8ff;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            padding: 10px 30px 10px 10px; /* Extra padding on right for the X */
-            margin: 20px auto;
-            width: 80%;
-            max-width: 400px;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .close-btn {
-            position: absolute;
-            top: 5px;
-            right: 15px;
-            font-size: 1.5em;
-            font-weight: bold;
-            cursor: pointer;
-            color: #555;
-        }
-        .close-btn:hover { color: #000; }
-        .hint-box h2 { margin: 10px 0; font-size: 1.5em; }
-    </style>
 </head>
 <body>
 
@@ -103,10 +70,9 @@ if (isset($_POST['choice']) && !$_SESSION['game_over']) {
             <div class="card dealer-card"><?php echo $dealer_card; ?></div>
         </div>
         
-        <!-- The Closable Hint Message Box -->
+        <!-- Hint Message Box -->
         <?php if (!empty($hint_message)): ?>
             <div class="hint-box" id="hintBox">
-                <span class="close-btn" onclick="document.getElementById('hintBox').style.display='none'">&times;</span>
                 <h2><?php echo $hint_message; ?></h2>
             </div>
         <?php endif; ?>

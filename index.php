@@ -88,7 +88,7 @@
         <h2>Guess a 10-letter word</h2>
         <div class ="hint">
             <?php
-            $modalTitle = "Hint Mini Game";
+            $modalTitle = "Gamble for a Hint!";
             $modalDisplay = isset($_POST['hint_submitted']) ? 'flex' : 'none';
             ?>
 
