@@ -3,7 +3,6 @@
 
     $wordLength = 10;
 
-// Fetches random word from database
     if (!isset($_SESSION['answer'])) {
         $query = mysqli_query($conn, "SELECT word FROM words ORDER BY RAND() LIMIT 1");
         $row = mysqli_fetch_assoc($query);
@@ -15,85 +14,121 @@
         }
 
         $_SESSION['attempts'] = [];
-        // ADDED: Initialize an array to store letters revealed by the hint minigame
         $_SESSION['hinted_letters'] = []; 
+        $_SESSION['maxAttempts'] = 5; 
+    }
 
-        // ADDED: Initialize maxAttempts if not already set
-        if (!isset($_SESSION['maxAttempts'])) {
-            $_SESSION['maxAttempts'] = 5; // Set the maximum number of attempts
+    // =====================================================================
+    // MINI-GAME BACKEND LOGIC (Processes BEFORE the Wordle board calculates)
+    // =====================================================================
+    $deck_of_cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+    $player_hand = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q"];
+
+    if (!function_exists('getCardValue')) {
+        function getCardValue($card) {
+            $values = [
+                "A" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7, 
+                "8" => 8, "9" => 9, "10" => 10, "J" => 11, "Q" => 12, "K" => 13
+            ];
+            return $values[$card];  
         }
     }
 
-    $gameEnded = false; // Sets gameEnded to false initially
-    $message = ""; // Initialize message
+    if (!function_exists('winConditionEffect')) {
+        function winConditionEffect() {
+            if (!empty($_SESSION['answer'])) {
+                $possibleLetters = array_unique(str_split($_SESSION['answer']));
+                if (isset($_SESSION['hinted_letters'])) {
+                    $possibleLetters = array_diff($possibleLetters, $_SESSION['hinted_letters']);
+                }
+                if (!empty($possibleLetters)) {
+                    $randomHintLetter = $possibleLetters[array_rand($possibleLetters)];
+                    $_SESSION['hinted_letters'][] = $randomHintLetter;
+                }
+            }
+        }
+    }
 
-// Handles the guess submission and checks if the guess is valid and if the game has ended
+    // Initialize or Reset card mini-game
+    if (isset($_POST['play_again']) || !isset($_SESSION['player_card'])) {
+        $_SESSION['player_card'] = $player_hand[array_rand($player_hand)];
+        $_SESSION['dealer_card'] = "";
+        $_SESSION['hint_message'] = "";
+        $_SESSION['game_over'] = false;
+    }
+
+    // Process higher/lower choice instantly
+    if (isset($_POST['choice']) && !$_SESSION['game_over']) {
+        $choice = $_POST['choice']; 
+        $available_dealer_cards = array_diff($deck_of_cards, [$_SESSION['player_card']]);
+        $_SESSION['dealer_card'] = $available_dealer_cards[array_rand($available_dealer_cards)];
+        
+        $playerValue = getCardValue($_SESSION['player_card']);
+        $dealerValue = getCardValue($_SESSION['dealer_card']);
+        
+        if (($choice === 'higher' && $dealerValue > $playerValue) || ($choice === 'lower' && $dealerValue < $playerValue)) {
+            $_SESSION['hint_message'] = "You Win! The dealer drew a " . ($choice === 'higher' ? "higher" : "lower") . " card.";
+            winConditionEffect();
+        } else {
+            $_SESSION['hint_message'] = "You Lose! The dealer drew a " . ($dealerValue > $playerValue ? "higher" : "lower") . " card.";
+            if ($_SESSION['maxAttempts'] > 1) {
+                $_SESSION['maxAttempts']--;
+            } else {
+                $_SESSION['hint_message'] .= " You are on your last attempt!";
+            }
+        }
+        $_SESSION['game_over'] = true;
+    }
+    // =====================================================================
+
+    // Reads the newly updated max attempts value instantly on the same page load!
+    $maxAttempts = $_SESSION['maxAttempts']; 
+    $gameEnded = false; 
+
+    // Handles the Wordle guess submission
     if (isset($_POST['guess'])) {
         $guess = strtoupper(trim($_POST['guess']));
-
-        if (strlen($guess) == $wordLength && count($_SESSION['attempts']) < $_SESSION['maxAttempts']) {
-            $checkQuery = mysqli_query(
-                $conn,
-                "SELECT word FROM words WHERE word = '" . mysqli_real_escape_string($conn, strtolower($guess)) . "'"
-            );
-
+        if (strlen($guess) == $wordLength && count($_SESSION['attempts']) < $maxAttempts) {
+            $checkQuery = mysqli_query($conn, "SELECT word FROM words WHERE word = '" . mysqli_real_escape_string($conn, strtolower($guess)) . "'");
             if (mysqli_num_rows($checkQuery) > 0) {
                 $_SESSION['attempts'][] = $guess;
-
                 if ($guess == $_SESSION['answer']) {
                     $message = "You Win!";
                     $gameEnded = true;
-                } elseif (count($_SESSION['attempts']) >= $_SESSION['maxAttempts']) {
+                } elseif (count($_SESSION['attempts']) >= $maxAttempts) {
                     $message = "Game Over! Word was " . $_SESSION['answer'];
                 }
             } else {
                 $message = "Invalid word! Try again.";
             }
-        } elseif (strlen($guess) == $wordLength && count($_SESSION['attempts']) >= $_SESSION['maxAttempts']) {
-            $message = "Game Over! Word was " . $_SESSION['answer'];
         }
     }
 
-    $gameEnded = (count($_SESSION['attempts']) >= $_SESSION['maxAttempts'] || in_array($_SESSION['answer'], $_SESSION['attempts']));
+    $gameEnded = (count($_SESSION['attempts']) >= $maxAttempts || in_array($_SESSION['answer'], $_SESSION['attempts']));
 
-// Displays message based on gamestate
     if ($gameEnded && in_array($_SESSION['answer'], $_SESSION['attempts'])) {
         $message = "You Win!";
     } elseif ($gameEnded && empty($message)) {
         $message = "Game Over! Word was " . $_SESSION['answer'];
     }
 
-// Colors the guess based on its similarity to the answer
     function colorGuess($guess, $answer) {
         $result = [];
-        $guessLength = strlen($guess);
-        $answerLength = strlen($answer);
-
         for ($i = 0; $i < 10; $i++) {
-            $guessChar = ($i < $guessLength) ? $guess[$i] : "";
-            $answerChar = ($i < $answerLength) ? $answer[$i] : "";
-
-            if ($guessChar == $answerChar) {
-                $result[] = "green";
-            } elseif (strpos($answer, $guessChar) !== false) {
-                $result[] = "yellow";
-            } else {
-                $result[] = "gray";
-            }
+            if ($guess[$i] == $answer[$i]) $result[] = "green";
+            elseif (strpos($answer, $guess[$i]) !== false) $result[] = "yellow";
+            else $result[] = "gray";
         }
-
         return $result;
     }
 
-    // ADDED: Helper function to turn keyboard keys yellow if they are hinted
     function getKeyStyle($letter) {
         if (isset($_SESSION['hinted_letters']) && in_array($letter, $_SESSION['hinted_letters'])) {
             return 'background-color: #c9b458 !important; color: white !important;';
         }
         return '';
     }
-    ?>
-
+?>
     <!DOCTYPE html>
     <html>
     <head>
