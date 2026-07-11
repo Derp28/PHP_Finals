@@ -258,6 +258,15 @@ button {
     cursor: pointer; 
 }
 
+.letter-header {
+    color: #000000;
+    font-size: 2.5em;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-family: sans-serif;
+}
+
 button:hover { 
     background: #00ff00; 
 }
@@ -273,15 +282,6 @@ button:hover {
 .letter-section {
     margin-top: 40px;
     text-align: left; /* Align headers to the left for better readability */
-}
-
-.letter-header {
-    color: #c9b458;
-    font-size: 2.5em;
-    border-bottom: 2px solid #c9b458;
-    padding-bottom: 5px;
-    margin-bottom: 20px;
-    font-family: sans-serif;
 }
 
 .word-grid {

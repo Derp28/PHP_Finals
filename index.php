@@ -236,6 +236,15 @@
                 } else if (key === 'Enter') {
                     event.preventDefault();
                     submitGuess();
+                } else if (key === 'Escape') {
+                    const hintModal = document.getElementById('myModal');
+                    const dictModal = document.getElementById('myModal2');
+
+                    if (hintModal && hintModal.style.display === 'flex') {
+                        hintModal.style.display = 'none';
+                    } else if (dictModal && dictModal.style.display === 'flex') {
+                        dictModal.style.display = 'none';
+                    }
                 }
             });
         }
