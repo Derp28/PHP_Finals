@@ -3,8 +3,6 @@ $host = "localhost";
 $username = "root";
 $password = "";
 $database = "word_bank";
-
-
 $conn = mysqli_connect($host, $username, $password);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
@@ -54,6 +52,7 @@ $words = [
     "yardmaster", "yearlongly", "yellowtail", "yesterdays", "youthfully",
     "zabaglione", "zambesians", "zealotries", "zeppelined", "ziggurates", "zincifying", "zionocracy", "zoological", "zootomical", "zygophytes"
 ];
+
 
 
 foreach ($words as $word) {
