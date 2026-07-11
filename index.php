@@ -86,7 +86,7 @@
         <link rel="stylesheet" href="style.css">
         <h1>Fake Wordle</h1>
         
-        <div class ="hint">
+        <div class="hint">
             <?php
             $modalTitle = "Hint Mini Game";
             // Check if the page reloaded because of the hint game. 
