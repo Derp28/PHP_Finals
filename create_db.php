@@ -47,14 +47,14 @@ $words = [
     "sabbatical", "sabotaging", "sabretache", "sabulosity", "saccharase", "saccharate", "saccharide", "saccharify", "saccharine", "saccharise", "saccharize", "saccharoid", "saccharose", "sacculated", "sacerdotal", "sachemship", "sackcloths", "sacralized", "sacraments", "sacredness", "sacrificed", "sacrificer", "sacrifices", "sacrileges", "sacristans", "sacristies", "sacroiliac", "sacrosanct", "saddleback", "saddlebags", "saddlebill",
     "tabernacle", "tabescence", "tablatures", "tablecloth", "tablelands", "tablespoon", "tabletting", "tablewares", "tabloidism", "tabularise", "tabularize", "tabulating", "tabulation", "tabulators", "tacamahaca", "tachograph", "tachometer", "tachometry", "tachygraph", "tachylitic", "tachylytic", "tachymeter", "tachymetry", "tachypneic", "tachypnoea", "tachytelic", "taciturnly", "tactically", "tacticians", "tactlessly", "taeniacide",
     "ubersexual", "ubiquinone", "ubiquitary", "ubiquities", "ufological", "uglinesses", "ugsomeness", "uintathere", "ulcerating", "ulceration",
-    "ubiquitous", "ulceration", "ultimative", "unbalanced", "unchanging", "underworld", "underwrite", "unfaithful", "unification", "unorthodox",
+    "ubiquitous","ultimative", "unbalanced", "unchanging", "underworld", "underwrite", "unfaithful", "unification", "unorthodox",
     "vacationer", "vagabondry", "valedictor", "validated", "vanadiumic", "vaporously", "variometer", "vegetation", "ventilator", "vertebrate",
     "wainscoted", "wanderlust", "warehousey", "warinesses", "watchmaker", "waterborne", "waterproof", "watershedy", "weathering", "wilderness",
     "xenolithic", "xenophobia", "xerophytic", "xylophonic", "xylotomous",
     "yardmaster", "yearlongly", "yellowtail", "yesterdays", "youthfully",
     "zabaglione", "zambesians", "zealotries", "zeppelined", "ziggurates", "zincifying", "zionocracy", "zoological", "zootomical", "zygophytes"
-
 ];
+
 
 foreach ($words as $word) {
     $sql = "INSERT INTO words (word) VALUES ('" . mysqli_real_escape_string($conn, $word) . "')";
