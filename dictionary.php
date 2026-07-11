@@ -1,7 +1,4 @@
 <?php
-    // Connect to the database
-    include "config.php";
-
     // Fetch all words from the database and order them alphabetically (A-Z)
     $query = mysqli_query($conn, "SELECT word FROM words ORDER BY word ASC");
     
@@ -30,22 +27,6 @@
             margin: 0 auto;
             padding: 20px;
             text-align: center;
-        }
-
-        .back-btn {
-            background-color: #c9b458;
-            color: black;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        .back-btn:hover {
-            background-color: #a89545;
         }
 
         /* New styles for the letter categories */
@@ -86,7 +67,6 @@
 <body>
 
     <div class="dictionary-container">
-        <a href="index.php" class="back-btn">← Back to Game</a>
         
         <h1>Casino Wordle Dictionary</h1>
         <h2>All Valid 10-Letter Words</h2>
