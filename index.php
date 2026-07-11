@@ -85,13 +85,14 @@
     <head>
         <link rel="stylesheet" href="style.css">
         <h1>Casino Wordle</h1>
+        <h2>Guess a 10-letter word</h2>
         <div class ="hint">
             <?php
             $modalTitle = "Hint Mini Game";
             $modalDisplay = isset($_POST['hint_submitted']) ? 'flex' : 'none';
             ?>
 
-<div id="myModal" class="hint-modal">
+<div id="myModal" class="hint-modal" style="display: <?php echo $modalDisplay; ?>;">
     <div class="hint-modal-content">
         <button type="button" class="hint-modal-close" onclick="document.getElementById('myModal').style.display='none'">Close</button>
         <h3><?php echo $modalTitle; ?></h3>
