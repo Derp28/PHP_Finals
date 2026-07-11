@@ -1,7 +1,6 @@
 <?php
     include "config.php";
 
-    $maxAttempts = 5;
     $wordLength = 10;
 
 // Fetches random word from database
@@ -16,6 +15,13 @@
         }
 
         $_SESSION['attempts'] = [];
+        // ADDED: Initialize an array to store letters revealed by the hint minigame
+        $_SESSION['hinted_letters'] = []; 
+
+        // ADDED: Initialize maxAttempts if not already set
+        if (!isset($_SESSION['maxAttempts'])) {
+            $_SESSION['maxAttempts'] = 5; // Set the maximum number of attempts
+        }
     }
 
     $gameEnded = false; // Sets gameEnded to false initially
@@ -25,7 +31,7 @@
     if (isset($_POST['guess'])) {
         $guess = strtoupper(trim($_POST['guess']));
 
-        if (strlen($guess) == $wordLength && count($_SESSION['attempts']) < $maxAttempts) {
+        if (strlen($guess) == $wordLength && count($_SESSION['attempts']) < $_SESSION['maxAttempts']) {
             $checkQuery = mysqli_query(
                 $conn,
                 "SELECT word FROM words WHERE word = '" . mysqli_real_escape_string($conn, strtolower($guess)) . "'"
@@ -37,18 +43,18 @@
                 if ($guess == $_SESSION['answer']) {
                     $message = "You Win!";
                     $gameEnded = true;
-                } elseif (count($_SESSION['attempts']) >= $maxAttempts) {
+                } elseif (count($_SESSION['attempts']) >= $_SESSION['maxAttempts']) {
                     $message = "Game Over! Word was " . $_SESSION['answer'];
                 }
             } else {
                 $message = "Invalid word! Try again.";
             }
-        } elseif (strlen($guess) == $wordLength && count($_SESSION['attempts']) >= $maxAttempts) {
+        } elseif (strlen($guess) == $wordLength && count($_SESSION['attempts']) >= $_SESSION['maxAttempts']) {
             $message = "Game Over! Word was " . $_SESSION['answer'];
         }
     }
 
-    $gameEnded = (count($_SESSION['attempts']) >= $maxAttempts || in_array($_SESSION['answer'], $_SESSION['attempts']));
+    $gameEnded = (count($_SESSION['attempts']) >= $_SESSION['maxAttempts'] || in_array($_SESSION['answer'], $_SESSION['attempts']));
 
 // Displays message based on gamestate
     if ($gameEnded && in_array($_SESSION['answer'], $_SESSION['attempts'])) {
@@ -78,6 +84,14 @@
 
         return $result;
     }
+
+    // ADDED: Helper function to turn keyboard keys yellow if they are hinted
+    function getKeyStyle($letter) {
+        if (isset($_SESSION['hinted_letters']) && in_array($letter, $_SESSION['hinted_letters'])) {
+            return 'background-color: #c9b458 !important; color: white !important;';
+        }
+        return '';
+    }
     ?>
 
     <!DOCTYPE html>
@@ -86,6 +100,7 @@
         <link rel="stylesheet" href="style.css">
         <h1>Casino Wordle</h1>
         <h2>Guess a 10-letter word</h2>
+        <h2>Attempts Left: <?php echo $_SESSION['maxAttempts'] - count($_SESSION['attempts']); ?></h2>
         <div class ="hint">
             <?php
             $modalTitle = "Gamble for a Hint!";
@@ -117,37 +132,37 @@
 <!-- Digital keyboard that disables when game ends -->
             <div class="keyboard">
                 <div class="key-row">
-                    <button type="button" class="key key-letter" data-letter="Q" <?php echo $gameEnded ? 'disabled' : ''; ?>>Q</button>
-                    <button type="button" class="key key-letter" data-letter="W" <?php echo $gameEnded ? 'disabled' : ''; ?>>W</button>
-                    <button type="button" class="key key-letter" data-letter="E" <?php echo $gameEnded ? 'disabled' : ''; ?>>E</button>
-                    <button type="button" class="key key-letter" data-letter="R" <?php echo $gameEnded ? 'disabled' : ''; ?>>R</button>
-                    <button type="button" class="key key-letter" data-letter="T" <?php echo $gameEnded ? 'disabled' : ''; ?>>T</button>
-                    <button type="button" class="key key-letter" data-letter="Y" <?php echo $gameEnded ? 'disabled' : ''; ?>>Y</button>
-                    <button type="button" class="key key-letter" data-letter="U" <?php echo $gameEnded ? 'disabled' : ''; ?>>U</button>
-                    <button type="button" class="key key-letter" data-letter="I" <?php echo $gameEnded ? 'disabled' : ''; ?>>I</button>
-                    <button type="button" class="key key-letter" data-letter="O" <?php echo $gameEnded ? 'disabled' : ''; ?>>O</button>
-                    <button type="button" class="key key-letter" data-letter="P" <?php echo $gameEnded ? 'disabled' : ''; ?>>P</button>
+                    <button type="button" class="key key-letter" data-letter="Q" style="<?php echo getKeyStyle('Q'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>Q</button>
+                    <button type="button" class="key key-letter" data-letter="W" style="<?php echo getKeyStyle('W'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>W</button>
+                    <button type="button" class="key key-letter" data-letter="E" style="<?php echo getKeyStyle('E'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>E</button>
+                    <button type="button" class="key key-letter" data-letter="R" style="<?php echo getKeyStyle('R'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>R</button>
+                    <button type="button" class="key key-letter" data-letter="T" style="<?php echo getKeyStyle('T'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>T</button>
+                    <button type="button" class="key key-letter" data-letter="Y" style="<?php echo getKeyStyle('Y'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>Y</button>
+                    <button type="button" class="key key-letter" data-letter="U" style="<?php echo getKeyStyle('U'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>U</button>
+                    <button type="button" class="key key-letter" data-letter="I" style="<?php echo getKeyStyle('I'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>I</button>
+                    <button type="button" class="key key-letter" data-letter="O" style="<?php echo getKeyStyle('O'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>O</button>
+                    <button type="button" class="key key-letter" data-letter="P" style="<?php echo getKeyStyle('P'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>P</button>
                 </div>
                 <div class="key-row">
-                    <button type="button" class="key key-letter" data-letter="A" <?php echo $gameEnded ? 'disabled' : ''; ?>>A</button>
-                    <button type="button" class="key key-letter" data-letter="S" <?php echo $gameEnded ? 'disabled' : ''; ?>>S</button>
-                    <button type="button" class="key key-letter" data-letter="D" <?php echo $gameEnded ? 'disabled' : ''; ?>>D</button>
-                    <button type="button" class="key key-letter" data-letter="F" <?php echo $gameEnded ? 'disabled' : ''; ?>>F</button>
-                    <button type="button" class="key key-letter" data-letter="G" <?php echo $gameEnded ? 'disabled' : ''; ?>>G</button>
-                    <button type="button" class="key key-letter" data-letter="H" <?php echo $gameEnded ? 'disabled' : ''; ?>>H</button>
-                    <button type="button" class="key key-letter" data-letter="J" <?php echo $gameEnded ? 'disabled' : ''; ?>>J</button>
-                    <button type="button" class="key key-letter" data-letter="K" <?php echo $gameEnded ? 'disabled' : ''; ?>>K</button>
-                    <button type="button" class="key key-letter" data-letter="L" <?php echo $gameEnded ? 'disabled' : ''; ?>>L</button>
+                    <button type="button" class="key key-letter" data-letter="A" style="<?php echo getKeyStyle('A'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>A</button>
+                    <button type="button" class="key key-letter" data-letter="S" style="<?php echo getKeyStyle('S'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>S</button>
+                    <button type="button" class="key key-letter" data-letter="D" style="<?php echo getKeyStyle('D'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>D</button>
+                    <button type="button" class="key key-letter" data-letter="F" style="<?php echo getKeyStyle('F'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>F</button>
+                    <button type="button" class="key key-letter" data-letter="G" style="<?php echo getKeyStyle('G'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>G</button>
+                    <button type="button" class="key key-letter" data-letter="H" style="<?php echo getKeyStyle('H'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>H</button>
+                    <button type="button" class="key key-letter" data-letter="J" style="<?php echo getKeyStyle('J'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>J</button>
+                    <button type="button" class="key key-letter" data-letter="K" style="<?php echo getKeyStyle('K'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>K</button>
+                    <button type="button" class="key key-letter" data-letter="L" style="<?php echo getKeyStyle('L'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>L</button>
                 </div>
                 <div class="key-row">
                     <button type="button" class="key wide" id="backspaceBtn" <?php echo $gameEnded ? 'disabled' : ''; ?>>⌫</button>
-                    <button type="button" class="key key-letter" data-letter="Z" <?php echo $gameEnded ? 'disabled' : ''; ?>>Z</button>
-                    <button type="button" class="key key-letter" data-letter="X" <?php echo $gameEnded ? 'disabled' : ''; ?>>X</button>
-                    <button type="button" class="key key-letter" data-letter="C" <?php echo $gameEnded ? 'disabled' : ''; ?>>C</button>
-                    <button type="button" class="key key-letter" data-letter="V" <?php echo $gameEnded ? 'disabled' : ''; ?>>V</button>
-                    <button type="button" class="key key-letter" data-letter="B" <?php echo $gameEnded ? 'disabled' : ''; ?>>B</button>
-                    <button type="button" class="key key-letter" data-letter="N" <?php echo $gameEnded ? 'disabled' : ''; ?>>N</button>
-                    <button type="button" class="key key-letter" data-letter="M" <?php echo $gameEnded ? 'disabled' : ''; ?>>M</button>
+                    <button type="button" class="key key-letter" data-letter="Z" style="<?php echo getKeyStyle('Z'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>Z</button>
+                    <button type="button" class="key key-letter" data-letter="X" style="<?php echo getKeyStyle('X'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>X</button>
+                    <button type="button" class="key key-letter" data-letter="C" style="<?php echo getKeyStyle('C'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>C</button>
+                    <button type="button" class="key key-letter" data-letter="V" style="<?php echo getKeyStyle('V'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>V</button>
+                    <button type="button" class="key key-letter" data-letter="B" style="<?php echo getKeyStyle('B'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>B</button>
+                    <button type="button" class="key key-letter" data-letter="N" style="<?php echo getKeyStyle('N'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>N</button>
+                    <button type="button" class="key key-letter" data-letter="M" style="<?php echo getKeyStyle('M'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>M</button>
                     <button type="button" class="key wide" id="submitBtn" <?php echo $gameEnded ? 'disabled' : ''; ?>>Enter</button>
                 </div>
             </div>
