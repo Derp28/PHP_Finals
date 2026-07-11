@@ -19,7 +19,7 @@
     }
 
     // =====================================================================
-    // MINI-GAME BACKEND LOGIC (Processes BEFORE the Wordle board calculates)
+    // HINT BACKEND LOGIC (Processes BEFORE the Wordle board calculates)
     // =====================================================================
     $deck_of_cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     $player_hand = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q"];
@@ -58,7 +58,7 @@
     }
 
     // Process higher/lower choice instantly
-    if (isset($_POST['choice']) && !$_SESSION['game_over']) {
+if (isset($_POST['choice']) && !$_SESSION['game_over']) {
         $choice = $_POST['choice']; 
         $available_dealer_cards = array_diff($deck_of_cards, [$_SESSION['player_card']]);
         $_SESSION['dealer_card'] = $available_dealer_cards[array_rand($available_dealer_cards)];
@@ -69,16 +69,25 @@
         if (($choice === 'higher' && $dealerValue > $playerValue) || ($choice === 'lower' && $dealerValue < $playerValue)) {
             $_SESSION['hint_message'] = "You Win! The dealer drew a " . ($choice === 'higher' ? "higher" : "lower") . " card.";
             winConditionEffect();
+            $_SESSION['game_over'] = true; // Keeps modal open only for winners to see their hint
         } else {
-            $_SESSION['hint_message'] = "You Lose! The dealer drew a " . ($dealerValue > $playerValue ? "higher" : "lower") . " card.";
+            // 1. Apply the penalty immediately
             if ($_SESSION['maxAttempts'] > 1) {
                 $_SESSION['maxAttempts']--;
-            } else {
-                $_SESSION['hint_message'] .= " You are on your last attempt!";
             }
+            
+            // 2. Reset the mini-game parameters silently so it is fresh for their next attempt
+            $_SESSION['player_card'] = $player_hand[array_rand($player_hand)];
+            $_SESSION['dealer_card'] = "";
+            $_SESSION['hint_message'] = "";
+            $_SESSION['game_over'] = false;
+            
+            // 3. Force the page to reload cleanly, closing the modal instantly
+            header("Location: index.php");
+            exit();
         }
-        $_SESSION['game_over'] = true;
     }
+    
     // =====================================================================
 
     // Reads the newly updated max attempts value instantly on the same page load!
@@ -140,10 +149,17 @@
     <div class="hint">
         <?php
         $modalTitle = "Gamble for a Hint!";
-        $modalDisplay = isset($_POST['hint_submitted']) ? 'flex' : 'none';
+        
+        // Calculate remaining available attempts
+        $remainingAttempts = $maxAttempts - count($_SESSION['attempts']);
+        
+        // Disable button if they have 1 or fewer attempts left, or if the game is already over
+        $isHintDisabled = ($remainingAttempts <= 1 || $gameEnded);
+        
+        // Only allow the modal to display 'flex' if the hint button isn't disabled
+        $modalDisplay = (isset($_POST['hint_submitted']) && !$isHintDisabled) ? 'flex' : 'none';
         ?>
 
-        <!-- THIS ONE uses the dynamic $modalDisplay so it stays open after a gamble -->
         <div id="myModal" class="hint-modal" style="display: <?php echo $modalDisplay; ?>;">
             <div class="hint-modal-content">
                 <button type="button" class="hint-modal-close" onclick="document.getElementById('myModal').style.display='none'">Close</button>
@@ -151,7 +167,14 @@
                 <?php include "hint.php"; ?>
             </div>
         </div>
-        <button type="button" class="hint-open-btn" onclick="document.getElementById('myModal').style.display='flex'">💡</button>
+        
+        <!-- Updated Hint Button with disabled conditions and basic inline styles for visual feedback -->
+        <button type="button" 
+                class="hint-open-btn" 
+                onclick="document.getElementById('myModal').style.display='flex'"
+                <?php if ($isHintDisabled) echo 'disabled style="opacity: 0.5; cursor: not-allowed; filter: grayscale(100%);"'; ?>>
+            💡
+        </button>
     </div>
 
     <!-- ================= 2. DICTIONARY MODAL ================= -->
