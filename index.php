@@ -4,6 +4,7 @@
     $maxAttempts = 5;
     $wordLength = 10;
 
+// Fetches random word from database
     if (!isset($_SESSION['answer'])) {
         $query = mysqli_query($conn, "SELECT word FROM words ORDER BY RAND() LIMIT 1");
         $row = mysqli_fetch_assoc($query);
@@ -17,9 +18,10 @@
         $_SESSION['attempts'] = [];
     }
 
-    $gameEnded = false;
+    $gameEnded = false; // Sets gameEnded to false initially
     $message = ""; // Initialize message
 
+// Handles the guess submission and checks if the guess is valid and if the game has ended
     if (isset($_POST['guess'])) {
         $guess = strtoupper(trim($_POST['guess']));
 
@@ -48,12 +50,14 @@
 
     $gameEnded = (count($_SESSION['attempts']) >= $maxAttempts || in_array($_SESSION['answer'], $_SESSION['attempts']));
 
+// Displays message based on gamestate
     if ($gameEnded && in_array($_SESSION['answer'], $_SESSION['attempts'])) {
         $message = "You Win!";
     } elseif ($gameEnded && empty($message)) {
         $message = "Game Over! Word was " . $_SESSION['answer'];
     }
 
+// Colors the guess based on its similarity to the answer
     function colorGuess($guess, $answer) {
         $result = [];
         $guessLength = strlen($guess);
@@ -87,12 +91,15 @@
         <form method="POST" id="guessForm">
             <input type="hidden" id="guessInput" name="guess" value="">
 
-            <div class="guess-display">
-                <h2>Answer: <?php echo $_SESSION['answer']; ?></h2>
-                <span>Current guess:</span>
+<!-- Displays guess -->
+            <div class="guess-display"> 
+<!--  Answer checking for testing purposes. -->
+<!-- <h2>Answer: </?php echo $_SESSION['answer']; ?></h2> -->
+                <span> </span>
                 <strong id="currentGuess">-</strong>
             </div>
 
+<!-- Digital keyboard that disables when game ends -->
             <div class="keyboard">
                 <div class="key-row">
                     <button type="button" class="key key-letter" data-letter="Q" <?php echo $gameEnded ? 'disabled' : ''; ?>>Q</button>
@@ -131,6 +138,7 @@
             </div>
         </form>
 
+<!-- Handles keyboard input and updates the guess display -->
         <script>
         const guessForm = document.getElementById('guessForm');
         const guessInput = document.getElementById('guessInput');
@@ -184,7 +192,8 @@
             });
         }
         </script>
-
+        
+<!-- Displays the board where guesses can be seen -->
         <div class="board">
         <?php
         foreach ($_SESSION['attempts'] as $attempt) {
@@ -193,6 +202,7 @@
 
             echo "<div class='row' style='display:flex; gap: 5px; margin-bottom: 5px;'>"; // Added inline styles for structure
 
+// Saves the guess and colors the tiles based on the guess
             for ($i = 0; $i < 10; $i++) {
                 $letter = ($i < $attemptLength) ? $attempt[$i] : "";
                 $colorClass = isset($colors[$i]) ? $colors[$i] : "gray";
@@ -204,9 +214,9 @@
         ?>
         </div>
 
+<!-- Displays message if word is invalid or if the game is over -->
         <div class="game-messages">
         <?php
-
         if (!empty($message)) {
             echo "<h2>" . htmlspecialchars($message) . "</h2>";
         }
