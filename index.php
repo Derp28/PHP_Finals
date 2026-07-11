@@ -114,8 +114,22 @@
         <?php include "hint.php"; ?>
     </div>
 </div>
-
 <button type="button" class="hint-open-btn" onclick="document.getElementById('myModal').style.display='flex'">💡</button>
+        </div>
+
+                <div class ="dictornary">
+            <?php
+            $modalTitle = "See the Dictionary!";
+            ?>
+
+<div id="myModal2" class="dict-modal" style="display: <?php echo $modalDisplay; ?>;">
+    <div class="dict-modal-content">
+        <button type="button" class="dict-modal-close" onclick="document.getElementById('myModal2').style.display='none'">Close</button>
+        <h3><?php echo $modalTitle; ?></h3>
+        <?php include "dictionary.php"; ?>
+    </div>
+</div>
+<button type="button" class="dict-open-btn" onclick="document.getElementById('myModal2').style.display='flex'">📖</button>
         </div>
     </head>
     <body>
