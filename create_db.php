@@ -66,4 +66,5 @@ foreach ($words as $word) {
 }
 
 mysqli_close($conn);
+
 ?>
