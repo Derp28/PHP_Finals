@@ -60,8 +60,10 @@ foreach ($words as $word) {
     $sql = "INSERT INTO words (word) VALUES ('" . mysqli_real_escape_string($conn, $word) . "')";
     if (!mysqli_query($conn, $sql)) {
         echo "Error inserting $word: " . mysqli_error($conn) . "<br>";
+    } else {
+        echo "Inserted $word successfully.<br>";
     }
 }
 
-
+mysqli_close($conn);
 ?>
