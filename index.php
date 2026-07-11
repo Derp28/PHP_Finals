@@ -88,6 +88,7 @@
         <div class ="hint">
             <?php
             $modalTitle = "Hint Mini Game";
+            $modalDisplay = isset($_POST['hint_submitted']) ? 'flex' : 'none';
             ?>
 
 <div id="myModal" class="hint-modal">
@@ -108,8 +109,6 @@
 
 <!-- Displays guess -->
             <div class="guess-display"> 
-<!--  Answer checking for testing purposes. -->
-<!-- <h2>Answer: </?php echo $_SESSION['answer']; ?></h2> -->
                 <span> </span>
                 <strong id="currentGuess">-</strong>
             </div>
