@@ -15,15 +15,7 @@
         }
     }
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
     <link rel="stylesheet" href="style.css">
-    <title>Word Dictionary - Casino Wordle</title>
-</head>
-<body>
-
     <div class="dictionary-container">
         
         <h1>Casino Wordle Dictionary</h1>
@@ -53,5 +45,3 @@
         ?>
     </div>
 
-</body>
-</html>

@@ -101,36 +101,40 @@
         <h1>Casino Wordle</h1>
         <h2>Guess a 10-letter word</h2>
         <h2>Attempts Left: <?php echo $_SESSION['maxAttempts'] - count($_SESSION['attempts']); ?></h2>
-        <div class ="hint">
-            <?php
-            $modalTitle = "Gamble for a Hint!";
-            $modalDisplay = isset($_POST['hint_submitted']) ? 'flex' : 'none';
-            ?>
+<!-- ================= 1. HINT MODAL ================= -->
+    <div class="hint">
+        <?php
+        $modalTitle = "Gamble for a Hint!";
+        $modalDisplay = isset($_POST['hint_submitted']) ? 'flex' : 'none';
+        ?>
 
-<div id="myModal" class="hint-modal" style="display: <?php echo $modalDisplay; ?>;">
-    <div class="hint-modal-content">
-        <button type="button" class="hint-modal-close" onclick="document.getElementById('myModal').style.display='none'">Close</button>
-        <h3><?php echo $modalTitle; ?></h3>
-        <?php include "hint.php"; ?>
-    </div>
-</div>
-<button type="button" class="hint-open-btn" onclick="document.getElementById('myModal').style.display='flex'">💡</button>
+        <!-- THIS ONE uses the dynamic $modalDisplay so it stays open after a gamble -->
+        <div id="myModal" class="hint-modal" style="display: <?php echo $modalDisplay; ?>;">
+            <div class="hint-modal-content">
+                <button type="button" class="hint-modal-close" onclick="document.getElementById('myModal').style.display='none'">Close</button>
+                <h3><?php echo $modalTitle; ?></h3>
+                <?php include "hint.php"; ?>
+            </div>
         </div>
-
-                <div class ="dictornary">
-            <?php
-            $modalTitle = "See the Dictionary!";
-            ?>
-
-<div id="myModal2" class="dict-modal" style="display: <?php echo $modalDisplay; ?>;">
-    <div class="dict-modal-content">
-        <button type="button" class="dict-modal-close" onclick="document.getElementById('myModal2').style.display='none'">Close</button>
-        <h3><?php echo $modalTitle; ?></h3>
-        <?php include "dictionary.php"; ?>
+        <button type="button" class="hint-open-btn" onclick="document.getElementById('myModal').style.display='flex'">💡</button>
     </div>
-</div>
-<button type="button" class="dict-open-btn" onclick="document.getElementById('myModal2').style.display='flex'">📖</button>
+
+    <!-- ================= 2. DICTIONARY MODAL ================= -->
+    <div class="dictionary">
+        <?php
+        $dictModalTitle = "See the Dictionary!";
+        ?>
+
+        <!-- THIS ONE is strictly 'none' so form submissions never force it open -->
+        <div id="myModal2" class="dict-modal" style="display: none;">
+            <div class="dict-modal-content">
+                <button type="button" class="dict-modal-close" onclick="document.getElementById('myModal2').style.display='none'">Close</button>
+                <h3><?php echo $dictModalTitle; ?></h3>
+                <?php include "dictionary.php"; ?>
+            </div>
         </div>
+        <button type="button" class="dict-open-btn" onclick="document.getElementById('myModal2').style.display='flex'">📖</button>
+    </div>
     </head>
     <body>
 
