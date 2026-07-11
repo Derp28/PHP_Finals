@@ -142,7 +142,7 @@
                     <button type="button" class="key key-letter" data-letter="I" style="<?php echo getKeyStyle('I'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>I</button>
                     <button type="button" class="key key-letter" data-letter="O" style="<?php echo getKeyStyle('O'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>O</button>
                     <button type="button" class="key key-letter" data-letter="P" style="<?php echo getKeyStyle('P'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>P</button>
-                </div>
+                </div>  
                 <div class="key-row">
                     <button type="button" class="key key-letter" data-letter="A" style="<?php echo getKeyStyle('A'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>A</button>
                     <button type="button" class="key key-letter" data-letter="S" style="<?php echo getKeyStyle('S'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>S</button>

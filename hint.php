@@ -12,9 +12,9 @@ function getCardValue($card) {
 }
 
 function winConditionEffect() {
-     if (!empty($answerWord)) {
+     if (!empty($_SESSION['answer'])) {
         // Break the answer word down into individual unique letters
-        $possibleLetters = array_unique(str_split($answerWord));
+        $possibleLetters = array_unique(str_split($_SESSION['answer']));
         
         // Filter out letters that have ALREADY been hinted before
         if (isset($_SESSION['hinted_letters'])) {
@@ -51,13 +51,11 @@ if (isset($_POST['choice']) && !$_SESSION['game_over']) {
     
     if ($choice === 'higher' && $dealerValue > $playerValue) {
         $hint_message = "You Win! The dealer drew a higher card.";
-        $answerWord = $_SESSION['answer'];
         winConditionEffect();
     
    
     } elseif ($choice === 'lower' && $dealerValue < $playerValue) {
         $hint_message = "You Win! The dealer drew a lower card.";
-        $answerWord = $_SESSION['answer'];
         winConditionEffect();
         } else {
         $hint_message = "You Lose! The dealer drew a " . ($dealerValue > $playerValue ? "higher" : "lower") . " card.";
