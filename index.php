@@ -88,18 +88,22 @@
         
         <div class ="hint">
             <?php
-$modalTitle = "Hint Mini Game";
-?>
+            $modalTitle = "Hint Mini Game";
+            // Check if the page reloaded because of the hint game. 
+            // If yes, set display to 'flex'. If no, set to 'none'.
+            $modalDisplay = isset($_POST['hint_submitted']) ? 'flex' : 'none';
+            ?>
 
-<div id="myModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:#fff; width:min(90vw, 700px); max-height:90vh; overflow:auto; padding:20px; border-radius:10px; position:relative; color:#111;">
-        <button type="button" onclick="document.getElementById('myModal').style.display='none'" style="position:absolute; top:10px; right:10px;">Close</button>
-        <h3><?php echo $modalTitle; ?></h3>
-        <?php include "hint.php"; ?>
-    </div>
-</div>
+            <!-- The style attribute now uses the $modalDisplay variable -->
+            <div id="myModal" style="display:<?php echo $modalDisplay; ?>; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+                <div style="background:#fff; width:min(90vw, 700px); max-height:90vh; overflow:auto; padding:20px; border-radius:10px; position:relative; color:#111;">
+                    <button type="button" onclick="document.getElementById('myModal').style.display='none'" style="position:absolute; top:10px; right:10px;">Close</button>
+                    <h3><?php echo $modalTitle; ?></h3>
+                        <?php include "hint.php"; ?>
+                </div>
+            </div>
 
-<button type="button" onclick="document.getElementById('myModal').style.display='flex'">Hint</button>
+            <button type="button" onclick="document.getElementById('myModal').style.display='flex'">Hint</button>
         </div>
     </head>
     <body>
@@ -109,8 +113,6 @@ $modalTitle = "Hint Mini Game";
 
 <!-- Displays guess -->
             <div class="guess-display"> 
-<!--  Answer checking for testing purposes. -->
-<!-- <h2>Answer: </?php echo $_SESSION['answer']; ?></h2> -->
                 <span> </span>
                 <strong id="currentGuess">-</strong>
             </div>
