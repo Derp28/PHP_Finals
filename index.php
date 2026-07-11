@@ -84,9 +84,25 @@
     <html>
     <head>
         <link rel="stylesheet" href="style.css">
+        <h1>Fake Wordle</h1>
+        
+        <div class ="hint">
+            <?php
+$modalTitle = "Hint Mini Game";
+?>
+
+<div id="myModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#fff; width:min(90vw, 700px); max-height:90vh; overflow:auto; padding:20px; border-radius:10px; position:relative; color:#111;">
+        <button type="button" onclick="document.getElementById('myModal').style.display='none'" style="position:absolute; top:10px; right:10px;">Close</button>
+        <h3><?php echo $modalTitle; ?></h3>
+        <?php include "hint.php"; ?>
+    </div>
+</div>
+
+<button type="button" onclick="document.getElementById('myModal').style.display='flex'">Hint</button>
+        </div>
     </head>
     <body>
-        <h1>Fake Wordle</h1>
 
         <form method="POST" id="guessForm">
             <input type="hidden" id="guessInput" name="guess" value="">
@@ -226,5 +242,6 @@
         }
         ?>
         </div>
+
     </body>
     </html>

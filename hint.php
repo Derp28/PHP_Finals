@@ -1,0 +1,95 @@
+<?php
+
+$deck_of_cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+$player_hand = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q"];
+
+
+function getCardValue($card) {
+    $values = [
+        "A" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7, 
+        "8" => 8, "9" => 9, "10" => 10, "J" => 11, "Q" => 12, "K" => 13
+    ];
+    return $values[$card];
+}
+
+
+if (isset($_POST['play_again']) || !isset($_SESSION['player_card'])) {
+    $_SESSION['player_card'] = $player_hand[array_rand($player_hand)];
+    $_SESSION['game_over'] = false;
+}
+
+$message = "";
+$dealer_card = "";
+
+
+if (isset($_POST['choice']) && !$_SESSION['game_over']) {
+    $choice = $_POST['choice']; // 'higher' or 'lower'
+    
+
+    $available_dealer_cards = array_diff($deck_of_cards, [$_SESSION['player_card']]);
+    
+
+    $dealer_card = $available_dealer_cards[array_rand($available_dealer_cards)];
+    
+
+    $playerValue = getCardValue($_SESSION['player_card']);
+    $dealerValue = getCardValue($dealer_card);
+    
+
+    if ($choice === 'higher' && $dealerValue > $playerValue) {
+        $message = "You Win! The dealer drew a higher card.";
+    } elseif ($choice === 'lower' && $dealerValue < $playerValue) {
+        $message = "You Win! The dealer drew a lower card.";
+    } else {
+        $message = "You Lose! The dealer drew a " . ($dealerValue > $playerValue ? "higher" : "lower") . " card.";
+    }
+    
+    $_SESSION['game_over'] = true;
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Higher or Lower</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .card { 
+            display: inline-block; padding: 20px 30px; font-size: 2em; 
+            border: 2px solid #333; border-radius: 8px; margin: 10px; 
+            background-color: white; color: black; font-weight: bold;
+        }
+        .dealer-card { background-color: #f8f9fa; }
+        button { padding: 10px 20px; font-size: 1.2em; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>Higher or Lower</h1>
+    
+    <div>
+        <h3>Your Card:</h3>
+        <div class="card"><?php echo $_SESSION['player_card']; ?></div>
+    </div>
+
+    <?php if (!$_SESSION['game_over']): ?>
+        <p>Will the dealer's card be higher or lower?</p>
+        <form method="POST">
+            <button type="submit" name="choice" value="higher">Higher ⬆️</button>
+            <button type="submit" name="choice" value="lower">Lower ⬇️</button>
+        </form>
+    <?php else: ?>
+        <div>
+            <h3>Dealer's Card:</h3>
+            <div class="card dealer-card"><?php echo $dealer_card; ?></div>
+        </div>
+        
+        <h2><?php echo $message; ?></h2>
+        
+        <form method="POST">
+            <button type="submit" name="play_again" value="1">Play Again</button>
+        </form>
+    <?php endif; ?>
+
+</body>
+</html>
