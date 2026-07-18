@@ -150,7 +150,7 @@
         
         <div class="nav-right">
             <a onclick="document.getElementById('myModal2').style.display='flex'" class="nav-link" style="cursor: pointer;">DICTIONARY</a>
-            <a href="profile.php" class="nav-link">PROFILE</a>
+            <a onclick="document.getElementById('myModal3').style.display='flex'" class="nav-link" style="cursor: pointer;">PROFILE</a>
         </div>
     </nav>
 
@@ -186,6 +186,14 @@
             <button type="button" class="dict-modal-close" onclick="document.getElementById('myModal2').style.display='none'">Close</button>
             <h3>See the Dictionary!</h3>
             <?php include "dictionary.php"; ?>
+        </div>
+    </div>
+
+    <!-- ================= PROFILE MODAL ================= -->
+    <div id="myModal3" class="profile-modal" style="display: none;">
+        <div class="profile-modal-content">
+            <button type="button" class="profile-modal-close" onclick="document.getElementById('myModal3').style.display='none'">Close</button>
+            <?php include "profile.php"; ?>
         </div>
     </div>
 
@@ -341,14 +349,17 @@
             } else if (key === 'Enter') {
                 event.preventDefault();
                 submitGuess();
-            } else if (key === 'Escape') {
+                } else if (key === 'Escape') {
                 const hintModal = document.getElementById('myModal');
                 const dictModal = document.getElementById('myModal2');
+                const profileModal = document.getElementById('myModal3');
 
                 if (hintModal && hintModal.style.display === 'flex') {
                     hintModal.style.display = 'none';
                 } else if (dictModal && dictModal.style.display === 'flex') {
                     dictModal.style.display = 'none';
+                } else if (profileModal && profileModal.style.display === 'flex') {
+                    profileModal.style.display = 'none';
                 }
             }
         });

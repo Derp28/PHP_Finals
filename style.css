@@ -364,3 +364,163 @@ button:hover {
 .play-again-btn:hover {
     background-color: #e5cd64;
 }
+
+/* ================= PROFILE MODAL OVERLAY ================= */
+.profile-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-modal-content {
+    background: #111; /* Matched to your original body background */
+    width: min(90vw, 700px);
+    max-height: 90vh;
+    overflow: auto;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    color: white;
+}
+
+.profile-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 2px solid #333;
+    background: #7d010175;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.profile-modal-close:hover {
+    background: #ff0000;
+}
+
+/* ================= PROFILE CARD & STATS ================= */
+.profile-card {
+    background-color: #222;
+    border: 2px solid #c9b458; /* Casino Gold */
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 35px 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+    text-align: center;
+}
+
+.profile-card h1 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.auth-subtitle {
+    color: #c9b458;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    background: #111;
+    border: 1px solid #787c7e;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.stat-box.highlight {
+    border-color: #c9b458;
+    grid-column: span 2; /* Makes the best word span the whole width */
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.stat-box.highlight .stat-value {
+    color: #c9b458;
+}
+
+/* ================= PROFILE BUTTONS ================= */
+.nav-btn {
+    background-color: #c9b458;
+    color: #111;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.nav-btn:hover {
+    background-color: #e3cc6a;
+}
+
+.logout-btn {
+    background-color: #8a0e0e;
+    color: #ffffff;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.logout-btn:hover {
+    background-color: #d11a1a;
+}
+
+.delete-btn {
+    background-color: #111;
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 10px;
+    transition: 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #ff4d4d;
+    color: #fff;
+}
