@@ -1,28 +1,51 @@
 <?php
+
 $host = "localhost";
 $username = "root";
 $password = "";
 $database = "word_bank";
+
+// 1. Connect to MySQL without a database selected yet
 $conn = mysqli_connect($host, $username, $password);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
+// 2. Create the Database
 $sql = "CREATE DATABASE IF NOT EXISTS $database";
 if (!mysqli_query($conn, $sql)) {
     die("Error creating database: " . mysqli_error($conn));
 }
 
+// 3. Select the Database
 mysqli_select_db($conn, $database);
 
+// 4. Create the Words Table
 $sql = "CREATE TABLE IF NOT EXISTS words (
     id INT AUTO_INCREMENT PRIMARY KEY,
     word VARCHAR(50) NOT NULL UNIQUE
 )";
 if (!mysqli_query($conn, $sql)) {
-    die("Error creating table: " . mysqli_error($conn));
+    die("Error creating words table: " . mysqli_error($conn));
 }
 
+// 5. Create the Users Table (With new profile stats!)
+$sql = "CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    games_played INT DEFAULT 0,
+    gambles_made INT DEFAULT 0,
+    gambles_won INT DEFAULT 0,
+    best_word VARCHAR(50) DEFAULT 'None Yet',
+    least_attempts INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+if (!mysqli_query($conn, $sql)) {
+    die("Error creating users table: " . mysqli_error($conn));
+}
+
+// 6. Insert the Word Bank
 $words = [
     "aardwolves", "abacterial", "abandoning", "abaptiston", "abasements", "abashments", "abatements", "abbreviate", "abdicating", "abdication", "abdicative", "abdominals", "abdominous", "abducentes", "abductions", "abecedaria", "aberdevine", "aberrantly", "aberrating", "aberration", "abhorrence", "abiogenist", "abiotrophy", "abirritant", "abirritate", "abjections", "abjectness", "abjunction", "abjuration", "abjuratory", "ablactated", 
     "babbitting", "babblement", "babblingly", "babesiasis", "babesiosis", "babiroussa", "babyccinos", "babysitter", "bacchanals", "bacchantes", "bacchantic", "bachelorly", "bacillemia", "bacilluria", "bacitracin", "backbiters", "backbiting", "backbitten", "backblocks", "backboards", "backdating", "backfields", "backfiring", "backfitted", "backgammon", "background", "backhanded", "backhander", "backhouses", "backlashed", "backlashes",
@@ -53,17 +76,16 @@ $words = [
     "zabaglione", "zambesians", "zealotries", "zeppelined", "ziggurates", "zincifying", "zionocracy", "zoological", "zootomical", "zygophytes"
 ];
 
-
-
+$count = 0;
 foreach ($words as $word) {
-    $sql = "INSERT INTO words (word) VALUES ('" . mysqli_real_escape_string($conn, $word) . "')";
-    if (!mysqli_query($conn, $sql)) {
-        echo "Error inserting $word: " . mysqli_error($conn) . "<br>";
-    } else {
-        echo "Inserted $word successfully.<br>";
+    // INSERT IGNORE prevents SQL errors if you run this script twice by accident
+    $sql = "INSERT IGNORE INTO words (word) VALUES ('" . mysqli_real_escape_string($conn, $word) . "')";
+    if (mysqli_query($conn, $sql) && mysqli_affected_rows($conn) > 0) {
+        $count++;
     }
 }
+echo "<h2>Database Setup Complete!</h2>";
+echo "<p>Successfully created tables and inserted $count new words.</p>";
 
 mysqli_close($conn);
-
 ?>
