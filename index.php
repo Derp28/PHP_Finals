@@ -19,7 +19,7 @@
     }
 
     // =====================================================================
-    // HINT BACKEND LOGIC (Processes BEFORE the Wordle board calculates)
+    // HINT BACKEND LOGIC
     // =====================================================================
     $deck_of_cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     $player_hand = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q"];
@@ -49,7 +49,6 @@
         }
     }
 
-    // Initialize or Reset card mini-game
     if (isset($_POST['play_again']) || !isset($_SESSION['player_card'])) {
         $_SESSION['player_card'] = $player_hand[array_rand($player_hand)];
         $_SESSION['dealer_card'] = "";
@@ -57,7 +56,6 @@
         $_SESSION['game_over'] = false;
     }
 
-    // Process higher/lower choice instantly
     if (isset($_POST['choice']) && !$_SESSION['game_over']) {
         $choice = $_POST['choice']; 
         $available_dealer_cards = array_diff($deck_of_cards, [$_SESSION['player_card']]);
@@ -69,20 +67,15 @@
         if (($choice === 'higher' && $dealerValue > $playerValue) || ($choice === 'lower' && $dealerValue < $playerValue)) {
             $_SESSION['hint_message'] = "You Win! The dealer drew a " . ($choice === 'higher' ? "higher" : "lower") . " card.";
             winConditionEffect();
-            $_SESSION['game_over'] = true; // Keeps modal open only for winners to see their hint
+            $_SESSION['game_over'] = true; 
         } else {
-            // 1. Apply the penalty immediately
             if ($_SESSION['maxAttempts'] > 1) {
                 $_SESSION['maxAttempts']--;
             }
-            
-            // 2. Reset the mini-game parameters silently so it is fresh for their next attempt
             $_SESSION['player_card'] = $player_hand[array_rand($player_hand)];
             $_SESSION['dealer_card'] = "";
             $_SESSION['hint_message'] = "";
             $_SESSION['game_over'] = false;
-            
-            // 3. Force the page to reload cleanly, closing the modal instantly
             header("Location: index.php");
             exit();
         }
@@ -90,11 +83,10 @@
     
     // =====================================================================
 
-    // Reads the newly updated max attempts value instantly on the same page load!
     $maxAttempts = $_SESSION['maxAttempts']; 
     $gameEnded = false; 
+    $message = "";
 
-    // Handles the Wordle guess submission
     if (isset($_POST['guess'])) {
         $guess = strtoupper(trim($_POST['guess']));
         if (strlen($guess) == $wordLength && count($_SESSION['attempts']) < $maxAttempts) {
@@ -157,25 +149,23 @@
         </div>
         
         <div class="nav-right">
-            <!-- Dictionary Modal Trigger Link -->
             <a onclick="document.getElementById('myModal2').style.display='flex'" class="nav-link" style="cursor: pointer;">DICTIONARY</a>
             <a href="profile.php" class="nav-link">PROFILE</a>
         </div>
     </nav>
 
+    <h1 class="text-center">Casino Wordle</h1>
     <h2 class="text-center">Guess a 10-letter word</h2>
 
-<!-- ================= 1. HINT MODAL ================= -->
-    <div class="hint">
+    <!-- ================= HINT MODAL ================= -->
+    <div class="hint text-center" style="margin-bottom: 20px;">
         <?php
         $modalTitle = "Gamble for a Hint!";
-        // Calculate remaining available attempts
         $remainingAttempts = $maxAttempts - count($_SESSION['attempts']);
-        // Disable button if they have 1 or fewer attempts left, or if the game is already over
         $isHintDisabled = ($remainingAttempts <= 1 || $gameEnded);
-        // Only allow the modal to display 'flex' if the hint button isn't disabled
         $modalDisplay = (isset($_POST['hint_submitted']) && !$isHintDisabled) ? 'flex' : 'none';
         ?>
+
         <div id="myModal" class="hint-modal" style="display: <?php echo $modalDisplay; ?>;">
             <div class="hint-modal-content">
                 <button type="button" class="hint-modal-close" onclick="document.getElementById('myModal').style.display='none'">Close</button>
@@ -183,35 +173,73 @@
                 <?php include "hint.php"; ?>
             </div>
         </div>
-        <!-- Updated Hint Button with disabled conditions and basic inline styles for visual feedback -->
-        <button type="button"
-                class="hint-open-btn"
-                onclick="document.getElementById('myModal').style.display='flex'"
-        <?php if ($isHintDisabled) echo 'disabled style="opacity: 0.5; cursor: not-allowed; filter: grayscale(100%);"'; ?>>💡</button>
+        
+        <button type="button" class="hint-open-btn" onclick="document.getElementById('myModal').style.display='flex'"
+                <?php if ($isHintDisabled) echo 'disabled style="opacity: 0.5; cursor: not-allowed; filter: grayscale(100%);"'; ?>>
+            💡
+        </button>
     </div>
 
-    <!-- ================= 2. DICTIONARY MODAL (Hidden Container) ================= -->
-    <?php $dictModalTitle = "See the Dictionary!"; ?>
-    <!-- THIS ONE is strictly 'none' so form submissions never force it open -->
+    <!-- ================= DICTIONARY MODAL ================= -->
     <div id="myModal2" class="dict-modal" style="display: none;">
         <div class="dict-modal-content">
             <button type="button" class="dict-modal-close" onclick="document.getElementById('myModal2').style.display='none'">Close</button>
-            <h3><?php echo $dictModalTitle; ?></h3>
+            <h3>See the Dictionary!</h3>
             <?php include "dictionary.php"; ?>
         </div>
     </div>
 
-    <!-- ================= GAME BOARD AND KEYBOARD ================= -->
+    <!-- ================= 1. GAME BOARD ================= -->
+    <div class="board">
+    <?php
+    $attemptsCount = count($_SESSION['attempts']);
+    
+    // Loop through max attempts to render empty slots for unguessed words
+    for ($rowIdx = 0; $rowIdx < $maxAttempts; $rowIdx++) {
+        echo "<div class='row'>";
+        
+        if ($rowIdx < $attemptsCount) {
+            // Render completed guess
+            $attempt = $_SESSION['attempts'][$rowIdx];
+            $colors = colorGuess($attempt, $_SESSION['answer']);
+            for ($i = 0; $i < 10; $i++) {
+                $letter = $attempt[$i];
+                $colorClass = $colors[$i];
+                echo "<div class='tile " . $colorClass . "'>" . htmlspecialchars($letter) . "</div>";
+            }
+        } elseif ($rowIdx == $attemptsCount && !$gameEnded) {
+            // Render active row (where typed letters will go)
+            for ($i = 0; $i < 10; $i++) {
+                echo "<div class='tile empty active-tile' id='active-tile-$i'></div>";
+            }
+        } else {
+            // Render future empty rows
+            for ($i = 0; $i < 10; $i++) {
+                echo "<div class='tile empty'></div>";
+            }
+        }
+        echo "</div>";
+    }
+    ?>
+    </div>
+
+    <!-- ================= 2. GAME MESSAGES / PLAY AGAIN ================= -->
+    <!-- This sits exactly between the board and the keyboard now -->
+    <div class="game-messages text-center">
+    <?php
+    if (!empty($message)) {
+        echo "<h2 style='margin: 15px 0;'>" . htmlspecialchars($message) . "</h2>";
+    }
+
+    if ($gameEnded == true)  {
+        echo '<form action="reset.php" style="margin: 20px 0;"><button type="submit" class="play-again-btn">Play Again</button></form>';
+    }
+    ?>
+    </div>
+
+    <!-- ================= 3. KEYBOARD ================= -->
     <form method="POST" id="guessForm">
         <input type="hidden" id="guessInput" name="guess" value="">
-
-        <!-- Displays guess -->
-        <div class="guess-display text-center"> 
-            <span> </span>
-            <strong id="currentGuess">-</strong>
-        </div>
-
-        <!-- Digital keyboard that disables when game ends -->
         <div class="keyboard">
             <div class="key-row">
                 <button type="button" class="key key-letter" data-letter="Q" style="<?php echo getKeyStyle('Q'); ?>" <?php echo $gameEnded ? 'disabled' : ''; ?>>Q</button>
@@ -250,14 +278,27 @@
         </div>
     </form>
 
-    <!-- Handles keyboard input and updates the guess display -->
     <script>
     const guessForm = document.getElementById('guessForm');
     const guessInput = document.getElementById('guessInput');
-    const currentGuess = document.getElementById('currentGuess');
 
+    // Automatically injects the typed letters into the empty slots
     function updateGuessDisplay() {
-        currentGuess.textContent = guessInput.value || '-';
+        const currentGuess = guessInput.value;
+        for (let i = 0; i < 10; i++) {
+            const tile = document.getElementById('active-tile-' + i);
+            if (tile) {
+                // If there's a letter at this index, show it. Otherwise, clear it.
+                tile.textContent = currentGuess[i] ? currentGuess[i] : '';
+                
+                // Add a visual pop when a letter is typed
+                if (currentGuess[i]) {
+                    tile.style.borderColor = '#c9b458';
+                } else {
+                    tile.style.borderColor = 'white';
+                }
+            }
+        }
     }
 
     function addLetter(letter) {
@@ -313,40 +354,5 @@
         });
     }
     </script>
-    
-    <!-- Displays the board where guesses can be seen -->
-    <div class="board">
-    <?php
-    foreach ($_SESSION['attempts'] as $attempt) {
-        $colors = colorGuess($attempt, $_SESSION['answer']);
-        $attemptLength = strlen($attempt);
-
-        echo "<div class='row' style='display:flex; justify-content: center; gap: 5px; margin-bottom: 5px;'>"; // Added justify-content center for the board rows
-
-        // Saves the guess and colors the tiles based on the guess
-        for ($i = 0; $i < 10; $i++) {
-            $letter = ($i < $attemptLength) ? $attempt[$i] : "";
-            $colorClass = isset($colors[$i]) ? $colors[$i] : "gray";
-            echo "<div class='tile " . $colorClass . "'>" . htmlspecialchars($letter) . "</div>";
-        }
-
-        echo "</div>";
-    }
-    ?>
-    </div>
-
-    <!-- Displays message if word is invalid or if the game is over -->
-    <div class="game-messages text-center">
-    <?php
-    if (!empty($message)) {
-        echo "<h2>" . htmlspecialchars($message) . "</h2>";
-    }
-
-    if ($gameEnded == true)  {
-        echo '<form action="reset.php"><button type="submit">Play Again</button></form>';
-    }
-    ?>
-    </div>
-
 </body>
 </html>
