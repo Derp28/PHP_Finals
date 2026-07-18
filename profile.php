@@ -69,8 +69,5 @@ $user = mysqli_fetch_assoc($result);
         <a href="logout.php" class="logout-btn">LOG OUT</a>
         
         <!-- DELETE ACCOUNT FORM -->
-        <form action="delete_account.php" method="POST" style="display: inline-block;" onsubmit="return confirm('WARNING: Are you sure you want to delete your account? All your Casino Wordle stats and gambles will be permanently lost!');">
-            <button type="submit" name="delete_account" class="delete-btn">DELETE ACCOUNT</button>
-        </form>
     </div>
 </div>

@@ -162,7 +162,6 @@
         </div>
     </nav>
 
-    <h1 class="text-center">Casino Wordle</h1>
     <h2 class="text-center">Guess a 10-letter word</h2>
 
     <!-- ================= HINT MODAL ================= -->
