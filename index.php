@@ -23,6 +23,7 @@
         $_SESSION['attempts'] = [];
         $_SESSION['hinted_letters'] = []; 
         $_SESSION['maxAttempts'] = 5; 
+        $_SESSION['wordle_tracked']= false;
     }
 
     // =====================================================================
@@ -63,7 +64,7 @@
         $_SESSION['game_over'] = false;
     }
 
-    if (isset($_POST['choice']) && !$_SESSION['game_over']) {
+   if (isset($_POST['choice']) && !$_SESSION['game_over']) {
         $choice = $_POST['choice']; 
         $available_dealer_cards = array_diff($deck_of_cards, [$_SESSION['player_card']]);
         $_SESSION['dealer_card'] = $available_dealer_cards[array_rand($available_dealer_cards)];
@@ -71,10 +72,17 @@
         $playerValue = getCardValue($_SESSION['player_card']);
         $dealerValue = getCardValue($_SESSION['dealer_card']);
         
+        // ⬇️ TRACK INDIVIDUAL GAMBLE ATTEMPTS
+        $user_id = $_SESSION['user_id'];
+        mysqli_query($conn, "UPDATE users SET gambles_made = gambles_made + 1 WHERE id = $user_id");
+        
         if (($choice === 'higher' && $dealerValue > $playerValue) || ($choice === 'lower' && $dealerValue < $playerValue)) {
             $_SESSION['hint_message'] = "You Win! The dealer drew a " . ($choice === 'higher' ? "higher" : "lower") . " card.";
             winConditionEffect();
             $_SESSION['game_over'] = true; 
+
+            // ⬇️ TRACK INDIVIDUAL GAMBLE WINS
+            mysqli_query($conn, "UPDATE users SET gambles_won = gambles_won + 1 WHERE id = $user_id");
         } else {
             if ($_SESSION['maxAttempts'] > 1) {
                 $_SESSION['maxAttempts']--;
@@ -120,6 +128,43 @@
         $message = "Game Over! Word was " . $_SESSION['answer'];
     }
 
+    $gameEnded = (count($_SESSION['attempts']) >= $maxAttempts || in_array($_SESSION['answer'], $_SESSION['attempts']));
+
+    if ($gameEnded && in_array($_SESSION['answer'], $_SESSION['attempts'])) {
+        $message = "You Win!";
+    } elseif ($gameEnded && empty($message)) {
+        $message = "Game Over! Word was " . $_SESSION['answer'];
+    }
+
+    // ⬇️ REAL-TIME TRACKING FOR PROFILE WORDLE STATS
+    if ($gameEnded && (!isset($_SESSION['wordle_tracked']) || $_SESSION['wordle_tracked'] === false)) {
+        $user_id = $_SESSION['user_id'];
+        
+        // 1. Log overall game completion
+        mysqli_query($conn, "UPDATE users SET games_played = games_played + 1 WHERE id = $user_id");
+        
+        // 2. Process personal achievements if they successfully solved the word
+        if (in_array($_SESSION['answer'], $_SESSION['attempts'])) {
+            $current_attempts = count($_SESSION['attempts']);
+            $current_word = $_SESSION['answer'];
+            
+            // Query current high scores to evaluate if they set a new personal record
+            $check_record_query = mysqli_query($conn, "SELECT least_attempts FROM users WHERE id = $user_id");
+            $record_data = mysqli_fetch_assoc($check_record_query);
+            $previous_least = (int)$record_data['least_attempts'];
+            
+            // If it's their first win (0) or faster than their previous record, write to DB
+            if ($previous_least === 0 || $current_attempts < $previous_least) {
+                $stmt_record = mysqli_prepare($conn, "UPDATE users SET best_word = ?, least_attempts = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt_record, "sii", $current_word, $current_attempts, $user_id);
+                mysqli_stmt_execute($stmt_record);
+                mysqli_stmt_close($stmt_record);
+            }
+        }
+        
+        // Seal state variable to stop duplicate tracking entries on refresh
+        $_SESSION['wordle_tracked'] = true;
+    }
     function colorGuess($guess, $answer) {
         $result = [];
         for ($i = 0; $i < 10; $i++) {
