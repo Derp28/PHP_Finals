@@ -72,7 +72,7 @@
         $playerValue = getCardValue($_SESSION['player_card']);
         $dealerValue = getCardValue($_SESSION['dealer_card']);
         
-        // ⬇️ TRACK INDIVIDUAL GAMBLE ATTEMPTS
+        // TRACK INDIVIDUAL GAMBLE ATTEMPTS
         $user_id = $_SESSION['user_id'];
         mysqli_query($conn, "UPDATE users SET gambles_made = gambles_made + 1 WHERE id = $user_id");
         
@@ -81,7 +81,7 @@
             winConditionEffect();
             $_SESSION['game_over'] = true; 
 
-            // ⬇️ TRACK INDIVIDUAL GAMBLE WINS
+            // TRACK INDIVIDUAL GAMBLE WINS
             mysqli_query($conn, "UPDATE users SET gambles_won = gambles_won + 1 WHERE id = $user_id");
         } else {
             if ($_SESSION['maxAttempts'] > 1) {
@@ -136,7 +136,7 @@
         $message = "Game Over! Word was " . $_SESSION['answer'];
     }
 
-    // ⬇️ REAL-TIME TRACKING FOR PROFILE WORDLE STATS
+    // REAL-TIME TRACKING FOR PROFILE WORDLE STATS
     if ($gameEnded && (!isset($_SESSION['wordle_tracked']) || $_SESSION['wordle_tracked'] === false)) {
         $user_id = $_SESSION['user_id'];
         
@@ -411,6 +411,9 @@
         document.getElementById('submitBtn').addEventListener('click', submitGuess);
 
         document.addEventListener('keydown', function(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
             const key = event.key;
 
             if (/^[a-zA-Z]$/.test(key)) {
