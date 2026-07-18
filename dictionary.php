@@ -1,4 +1,12 @@
 <?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit();
+    }
     // Fetch all words from the database and order them alphabetically (A-Z)
     $query = mysqli_query($conn, "SELECT word FROM words ORDER BY word ASC");
     

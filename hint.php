@@ -1,4 +1,8 @@
 <?php   
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit();
+    }
 // All calculations occur at the top of index.php.
 ?>
 
