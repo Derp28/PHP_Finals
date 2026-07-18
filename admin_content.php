@@ -59,9 +59,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// --- Pagination Logic for Words ---
+$wordsPerPage = 50; 
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+$offset = ($page - 1) * $wordsPerPage;
+
+// Get total count to calculate total pages
+$totalWordsQuery = mysqli_query($conn, "SELECT COUNT(*) as count FROM words");
+$totalWordsRow = mysqli_fetch_assoc($totalWordsQuery);
+$totalWords = $totalWordsRow['count'];
+$totalPages = ceil($totalWords / $wordsPerPage);
+
+// Fetch only the current page's words
 $usersResult = mysqli_query($conn, "SELECT id, username, is_admin, created_at FROM users ORDER BY username ASC");
-$wordsResult = mysqli_query($conn, "SELECT id, word FROM words ORDER BY word ASC");
+// --- Alphabetical Filter Logic for Words ---
+$letters = range('A', 'Z');
+// Check if a valid letter is in the URL, otherwise default to 'A'
+$currentLetter = isset($_GET['letter']) && in_array(strtoupper($_GET['letter']), $letters) ? strtoupper($_GET['letter']) : 'A';
+
+// Fetch users exactly as before
+$usersResult = mysqli_query($conn, "SELECT id, username, is_admin, created_at FROM users ORDER BY username ASC");
+
+// Fetch only words starting with the selected letter
+$likePattern = strtolower($currentLetter) . '%';
+$stmtWords = mysqli_prepare($conn, "SELECT id, word FROM words WHERE word LIKE ? ORDER BY word ASC");
+mysqli_stmt_bind_param($stmtWords, 's', $likePattern);
+mysqli_stmt_execute($stmtWords);
+$wordsResult = mysqli_stmt_get_result($stmtWords);
+
 ?>
+
 <div class="admin-page">
     <h1>Admin Panel</h1>
     <p class="auth-subtitle">MANAGE USERS AND WORDS</p>
@@ -101,6 +129,20 @@ $wordsResult = mysqli_query($conn, "SELECT id, word FROM words ORDER BY word ASC
                 <?php endwhile; ?>
             </tbody>
         </table>
+        </table> <!-- This is your existing closing table tag -->
+
+    <!-- Add this new pagination block -->
+    <div class="admin-pagination" style="margin-top: 15px; text-align: center;">
+        <?php if ($page > 1): ?>
+            <a href="?page=<?= $page - 1 ?>" class="admin-inline-btn">Previous</a>
+        <?php endif; ?>
+        
+        <span style="margin: 0 15px;">Page <?= $page ?> of <?= $totalPages ?></span>
+        
+        <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $page + 1 ?>" class="admin-inline-btn">Next</a>
+        <?php endif; ?>
+    </div>
     </div>
 
     <div class="admin-card">
@@ -111,8 +153,21 @@ $wordsResult = mysqli_query($conn, "SELECT id, word FROM words ORDER BY word ASC
         </form>
     </div>
 
-    <div class="admin-card">
+<div class="admin-card">
         <h2>Manage Words</h2>
+        
+        <!-- Add this A-Z navigation bar -->
+        <div class="admin-alphabet-filter" style="margin-bottom: 20px; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px;">
+            <?php foreach ($letters as $letter): ?>
+                <a href="?letter=<?= $letter ?>" 
+                   class="admin-inline-btn" 
+                   style="padding: 5px 10px; text-decoration: none; <?= $letter === $currentLetter ? 'background-color: #333; color: white; font-weight: bold;' : '' ?>">
+                    <?= $letter ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+        <!-- End of A-Z navigation -->
+
         <table class="admin-list">
             <thead>
                 <tr>

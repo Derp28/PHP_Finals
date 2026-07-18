@@ -1,4 +1,5 @@
 <?php
+set_time_limit(0); // Allow the script to run indefinitely
 
 $host = "localhost";
 $username = "root";
@@ -53,7 +54,6 @@ if (!mysqli_query($conn, $sql)) {
     die("Error creating users table: " . mysqli_error($conn));
 }
 
-$sql = "ALTER TABLE users ADD COLUMN is_admin TINYINT(1) NOT NULL DEFAULT 0";
 if (!mysqli_query($conn, $sql)) {
     $error = mysqli_error($conn);
     if (strpos($error, 'Duplicate column name') === false && strpos($error, 'already exists') === false) {
@@ -102,23 +102,25 @@ $words = [
 ];
 
 // 7. Insert the words into the database
-$sql = "INSERT IGNORE INTO words (word) VALUES (?)";
-$stmt = mysqli_prepare($conn, $sql);
+// 7. Insert words into the database
+$insertQuery = "INSERT IGNORE INTO words (word) VALUES (?)";
+$stmt = mysqli_prepare($conn, $insertQuery);
 
 if ($stmt) {
+    // Loop through the array and insert each word safely
     foreach ($words as $word) {
-        // Bind the word to the prepared statement and execute
-        mysqli_stmt_bind_param($stmt, "s", $word);
+        mysqli_stmt_bind_param($stmt, 's', $word);
         mysqli_stmt_execute($stmt);
     }
-    echo "All words have been successfully saved to the database!";
     mysqli_stmt_close($stmt);
+    echo "Database, tables, and word bank successfully populated!";
 } else {
-    echo "Error preparing statement: " . mysqli_error($conn);
+    die("Error preparing insert statement: " . mysqli_error($conn));
 }
 
-// Close the connection
+// Close the connection when finished
 mysqli_close($conn);
+
 $count = 0;
 foreach ($words as $word) {
     // INSERT IGNORE prevents SQL errors if you run this script twice by accident

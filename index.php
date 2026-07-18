@@ -3,6 +3,11 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit();
+    }
     $wordLength = 10;
 
     if (!isset($_SESSION['answer'])) {
@@ -200,14 +205,27 @@
         </div>
     </div>
 
-    <!-- ================= ADMIN MODAL ================= -->
-    <div id="myModal4" class="admin-modal" style="display: none;">
+<!-- ================= ADMIN MODAL ================= -->
+    <?php
+    // Check if a pagination, letter filter, or an admin POST submission just occurred
+    $showAdmin = (
+        isset($_GET['page']) || 
+        isset($_GET['letter']) || 
+        isset($_POST['delete_user']) || 
+        isset($_POST['create_word']) || 
+        isset($_POST['update_word']) || 
+        isset($_POST['delete_word'])
+    );
+    // Determine the display property based on the check above
+    $adminDisplay = $showAdmin ? 'flex' : 'none';
+    ?>
+    <div id="myModal4" class="admin-modal" style="display: <?php echo $adminDisplay; ?>;">
         <div class="admin-modal-content">
-            <button type="button" class="admin-modal-close" onclick="document.getElementById('myModal4').style.display='none'">Close</button>
+            <!-- Note: if you want the URL to clean up when they close it, you could change this button to redirect to index.php instead of just hiding it -->
+            <button type="button" class="admin-modal-close" onclick="window.location.href='index.php';">Close</button>
             <?php include "admin_content.php"; ?>
         </div>
     </div>
-
     <!-- ================= 1. GAME BOARD ================= -->
     <div class="board">
     <?php
