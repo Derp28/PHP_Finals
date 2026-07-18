@@ -1,67 +1,113 @@
-h1{
-font-size: 3.5rem;
-font-weight: bold;
-font-family: Garamond, serif;
+h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    font-family: Garamond, serif;
+    margin-top: 10px;
 }
 
-body{
-
-font-family:Arial;
-text-align:center;
-background:#111;
-color:white;
-margin:0;
-padding:20px 20px 180px;
-min-height:100vh;
-box-sizing:border-box;
-
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #111;
+    color: white;
+    margin: 0;
+    padding: 20px 20px 180px;
+    min-height: 100vh;
+    box-sizing: border-box;
 }   
 
-.row{
-
-display:flex;
-justify-content:center;
-margin:8px;
-
+/* =========================================
+   Navbar Styles
+   ========================================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #1a1a1a;
+    border-bottom: 2px solid #c9b458; /* Gold accent border */
+    color: white;
+    /* Negative margin to pull the navbar flush to the edges despite body padding */
+    margin: -20px -20px 30px -20px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-.tile{
-
-width:60px;
-height:60px;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-margin:4px;
-
-font-size:28px;
-font-weight:bold;
-
-border:2px solid white;
-
+.nav-left, .nav-center, .nav-right {
+    flex: 1; 
 }
 
-.green{
-
-background:#6aaa64;
-
+.nav-left {
+    text-align: left;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #c9b458; /* Matches the gold theme */
+    letter-spacing: 1px;
 }
 
-.yellow{
-
-background:#c9b458;
-
+.nav-center {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
 }
 
-.gray{
-
-background:#787c7e;
-
+.nav-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px; 
 }
 
-.guess-display{
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #6aaa64; /* Turns green on hover */
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* =========================================
+   Game Board & Tiles
+   ========================================= */
+.row {
+    display: flex;
+    justify-content: center;
+    margin: 8px;
+}
+
+.tile {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 4px;
+    font-size: 28px;
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+.green {
+    background: #6aaa64;
+}
+
+.yellow {
+    background: #c9b458;
+}
+
+.gray {
+    background: #787c7e;
+}
+
+.guess-display {
     position: fixed;
     left: 50%;
     bottom: 270px;
@@ -72,71 +118,78 @@ background:#787c7e;
     pointer-events: none;
 }
 
-.keyboard{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    max-width:760px;
-    margin:20px auto 0;
-    position:fixed;
-    left:50%;
-    bottom:20px;
-    transform:translateX(-50%);
-    width:calc(100% - 30px);
+/* =========================================
+   Keyboard
+   ========================================= */
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    max-width: 760px;
+    margin: 20px auto 0;
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: calc(100% - 30px);
     z-index: 1;
 }
 
-.key-row{
-	display:flex;
-	justify-content:center;
-	gap:8px;
-	width:100%;
+.key-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
 }
 
-.key{
-    font-family:Verdana, sans-serif;
-	padding:12px 10px;
-	min-width:54px;
-	height:56px;
-	border:none;
-	border-radius:8px;
-	background:#f2f2f2;
-	color:#111;
-	font-size:25px;
-	cursor:pointer;
-	flex:1;
-	max-width:64px;
+.key {
+    font-family: Verdana, sans-serif;
+    padding: 12px 10px;
+    min-width: 54px;
+    height: 56px;
+    border: none;
+    border-radius: 8px;
+    background: #f2f2f2;
+    color: #111;
+    font-size: 25px;
+    cursor: pointer;
+    flex: 1;
+    max-width: 64px;
 }
 
-.key:hover{
-	background:#ddd;
+.key:hover {
+    background: #ddd;
 }
 
-.key.wide{
-	min-width:90px;
-	max-width:96px;
-	flex:1.2;
+.key.wide {
+    min-width: 90px;
+    max-width: 96px;
+    flex: 1.2;
 }
 
-.key:disabled{
-	opacity:0.6;
-	cursor:not-allowed;
+.key:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
+/* =========================================
+   Buttons & Modals
+   ========================================= */
 .hint-open-btn {
     position: absolute; 
-    top: 10px;          
-    right: 10px; 
-    margin: 10px 0 20px;
+    top: 90px;  /* Moved down to sit below the navbar */         
+    right: 20px; /* Keep it on the right side */
+    margin: 0;
     padding: 10px 16px;
     border: none;
     border-radius: 6px;
     background: #ebdf9053;
     color: #111;
-    font-size: 50px;
+    font-size: 40px; /* Adjusted slightly so it fits neatly */
     font-weight: bold;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
 .hint-open-btn:hover {
@@ -236,6 +289,9 @@ background:#787c7e;
     background: #ff0000;
 }
 
+/* =========================================
+   Hint Card Mini-Game Elements
+   ========================================= */
 .card { 
     display: inline-block; 
     padding: 20px 30px; 
@@ -256,8 +312,18 @@ button {
     font-size: 1.2em; 
     margin: 5px; 
     cursor: pointer; 
+    border: none;
+    border-radius: 5px;
+    color: white;
 }
 
+button:hover { 
+    background: #00ff00; 
+}
+
+/* =========================================
+   Dictionary Formatting
+   ========================================= */
 .letter-header {
     color: #000000;
     font-size: 2.5em;
@@ -267,10 +333,6 @@ button {
     font-family: sans-serif;
 }
 
-button:hover { 
-    background: #00ff00; 
-}
-
 .dictionary-container {
     max-width: 900px;
     margin: 0 auto;
@@ -278,10 +340,9 @@ button:hover {
     text-align: center;
 }
 
-/* New styles for the letter categories */
 .letter-section {
     margin-top: 40px;
-    text-align: left; /* Align headers to the left for better readability */
+    text-align: left; 
 }
 
 .word-grid {
@@ -300,5 +361,5 @@ button:hover {
     font-size: 1.2em;
     letter-spacing: 2px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    text-align: center; /* Keep the words centered inside their cards */
+    text-align: center; 
 }
