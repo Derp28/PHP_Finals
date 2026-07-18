@@ -41,6 +41,7 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    is_admin TINYINT(1) NOT NULL DEFAULT 0,
     games_played INT DEFAULT 0,
     gambles_made INT DEFAULT 0,
     gambles_won INT DEFAULT 0,
@@ -50,6 +51,24 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
 )";
 if (!mysqli_query($conn, $sql)) {
     die("Error creating users table: " . mysqli_error($conn));
+}
+
+$sql = "ALTER TABLE users ADD COLUMN is_admin TINYINT(1) NOT NULL DEFAULT 0";
+if (!mysqli_query($conn, $sql)) {
+    $error = mysqli_error($conn);
+    if (strpos($error, 'Duplicate column name') === false && strpos($error, 'already exists') === false) {
+        die("Error updating users table: " . $error);
+    }
+}
+
+$adminUsername = 'admin';
+$adminPassword = password_hash('admin123', PASSWORD_DEFAULT);
+$checkAdmin = mysqli_query($conn, "SELECT id FROM users WHERE username = '" . mysqli_real_escape_string($conn, $adminUsername) . "'");
+if ($checkAdmin && mysqli_num_rows($checkAdmin) === 0) {
+    $stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, is_admin) VALUES (?, ?, 1)");
+    mysqli_stmt_bind_param($stmt, 'ss', $adminUsername, $adminPassword);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 }
 
 // 6. Insert the Word Bank

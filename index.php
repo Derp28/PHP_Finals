@@ -151,6 +151,7 @@
         <div class="nav-right">
             <a onclick="document.getElementById('myModal2').style.display='flex'" class="nav-link" style="cursor: pointer;">DICTIONARY</a>
             <a onclick="document.getElementById('myModal3').style.display='flex'" class="nav-link" style="cursor: pointer;">PROFILE</a>
+            <?php if (!empty($_SESSION['is_admin'])) { echo '<a onclick="document.getElementById(\'myModal4\').style.display=\'flex\'" class="nav-link" style="cursor: pointer;">ADMIN</a>'; } ?>
         </div>
     </nav>
 
@@ -194,6 +195,14 @@
         <div class="profile-modal-content">
             <button type="button" class="profile-modal-close" onclick="document.getElementById('myModal3').style.display='none'">Close</button>
             <?php include "profile.php"; ?>
+        </div>
+    </div>
+
+    <!-- ================= ADMIN MODAL ================= -->
+    <div id="myModal4" class="admin-modal" style="display: none;">
+        <div class="admin-modal-content">
+            <button type="button" class="admin-modal-close" onclick="document.getElementById('myModal4').style.display='none'">Close</button>
+            <?php include "admin_content.php"; ?>
         </div>
     </div>
 
@@ -353,6 +362,7 @@
                 const hintModal = document.getElementById('myModal');
                 const dictModal = document.getElementById('myModal2');
                 const profileModal = document.getElementById('myModal3');
+                const adminModal = document.getElementById('myModal4');
 
                 if (hintModal && hintModal.style.display === 'flex') {
                     hintModal.style.display = 'none';
@@ -360,6 +370,8 @@
                     dictModal.style.display = 'none';
                 } else if (profileModal && profileModal.style.display === 'flex') {
                     profileModal.style.display = 'none';
+                } else if (adminModal && adminModal.style.display === 'flex') {
+                    adminModal.style.display = 'none';
                 }
             }
         });

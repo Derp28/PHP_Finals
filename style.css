@@ -524,3 +524,135 @@ button:hover {
     background-color: #ff4d4d;
     color: #fff;
 }
+
+/* ================= ADMIN MODAL ================= */
+.admin-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-modal-content {
+    background: #111;
+    width: min(95vw, 1100px);
+    max-height: 90vh;
+    overflow: auto;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    color: white;
+    border: 2px solid #c9b458;
+}
+
+.admin-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 2px solid #333;
+    background: #7d010175;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.admin-modal-close:hover {
+    background: #ff0000;
+}
+
+/* ================= ADMIN PANEL ================= */
+.admin-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.admin-card {
+    background: #222;
+    border: 2px solid #c9b458;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+}
+
+.admin-card h2, .admin-card h3 {
+    color: #c9b458;
+    margin-top: 0;
+}
+
+.admin-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.admin-form input, .admin-form select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #787c7e;
+    background: #111;
+    color: white;
+    min-width: 180px;
+}
+
+.admin-form button, .admin-inline-btn {
+    background: #c9b458;
+    color: #111;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.admin-form button:hover, .admin-inline-btn:hover {
+    background: #e3cc6a;
+}
+
+.admin-danger {
+    background: #8a0e0e;
+    color: white;
+}
+
+.admin-danger:hover {
+    background: #d11a1a;
+}
+
+.admin-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.admin-list th, .admin-list td {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    text-align: left;
+}
+
+.admin-list th {
+    color: #c9b458;
+}
+
+.admin-message {
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.admin-message.success {
+    background: #1c4c2c;
+    color: #d6f5dd;
+}
+
+.admin-message.error {
+    background: #5a1717;
+    color: #ffdede;
+}

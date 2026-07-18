@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
 
     if (!empty($username) && !empty($password)) {
-        $stmt = mysqli_prepare($conn, "SELECT id, password FROM users WHERE username = ?");
+        $stmt = mysqli_prepare($conn, "SELECT id, password, is_admin FROM users WHERE username = ?");
         mysqli_stmt_bind_param($stmt, "s", $username);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = (int) $row['id'];
                 $_SESSION['username'] = $username;
+                $_SESSION['is_admin'] = (int) $row['is_admin'];
                 header("Location: index.php");
                 exit();
             } else {

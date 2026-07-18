@@ -63,6 +63,8 @@ $user = mysqli_fetch_assoc($result);
         <!-- Close Modal / Return to Game -->
         <button type="button" class="nav-btn" onclick="document.getElementById('myModal3').style.display='none'">RETURN TO CASINO</button>
         
+        <?php if (!empty($_SESSION['is_admin'])) { echo '<a href="admin.php" class="nav-btn">ADMIN PANEL</a>'; } ?>
+        
         <!-- LOG OUT BUTTON -->
         <a href="logout.php" class="logout-btn">LOG OUT</a>
         
